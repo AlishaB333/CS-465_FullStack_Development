@@ -9,6 +9,7 @@ var indexRouter = require('./app_server/routes/index');
 var usersRouter = require('./app_server/routes/users');
 var travelRouter = require('./app_server/routes/travel');
 var apiRouter = require('./app_api/routes/index');
+var tripRouter = require('./app_api/controllers/trips');
 
 var handlebars = require('hbs');
 
@@ -27,15 +28,25 @@ app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended:false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//Enable CORS for API routes
+app.use('/api', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin','http://localhost:4200');
+  res.header('Access-Control-Allow-Headers','Origin, X-Requested-With,Content-Type,Allow');
+  res.header('Access-Control-Allow-Methods','GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 // wire-up routes to controllers
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/travel', travelRouter);
 app.use('/api', apiRouter);
+app.use('/api/trips', tripRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
